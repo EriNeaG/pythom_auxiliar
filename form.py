@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, PasswordField
-from wtforms.validators import DataRequired,EqualTo,Regexp
+from wtforms.validators import DataRequired,EqualTo,Regexp,Length
 
 #Clases para las consultas:
 class Consulta_Cliente(FlaskForm):
-    criterio = StringField('Escriba el Nombre del Cliente: ', validators=[DataRequired(message="Debe escribir valor")])
+    criterio = StringField('Escriba el Nombre del Cliente: ', validators=[Length(min=3, max=100, message="Debe ingresar como minimo 3 caracteres"),DataRequired(message="Debe escribir valor")])
 
 class Consulta_Producto(FlaskForm):
     criterio = StringField('Escriba el Nombre del Producto: ', validators=[DataRequired(message="Debe escribir un valor")])

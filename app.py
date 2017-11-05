@@ -5,9 +5,7 @@ import pandas
 #from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from formularios import Consulta_Cliente,Consulta_Producto,Consulta_Cantidad,Consulta_Precio, Formulario_Logueo,Formulario_Registro
-#from flask_wtf import FlaskForm
-#from wtforms import StringField, IntegerField, PasswordField
-#from wtforms.validators import DataRequired,EqualTo,Regexp
+from venta import Item
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_script import Manager
@@ -95,85 +93,122 @@ def contactos():
 
 @app.route('/busqueda/cliente', methods=['GET', 'POST'])
 def busqueda_cliente():
-    if 'username' in session:
-        try:
-            with open('busquedas.csv', 'w') as archivo:
-                pass
-        except FileNotFoundError:
-            return 'No se encuentra el archivo csv utilizado para las busquedas'
-        form_nombre = Consulta_Cliente()
+    if 'username' in session:        
+        form_nombre = Consulta_Cliente()    
         try:
             df = pandas.read_csv('Ventas.csv')
         except FileNotFoundError:
             return 'No se encuentra el archivo CSV de Ventas'    
-        if form_nombre.validate_on_submit():
-            df2 = df[(df['CLIENTE']==form_nombre.criterio.data)]
-            df2 = df2.to_csv('busquedas.csv', index=None)
-            with open('busquedas.csv') as archivo:
-                lista_resultado = csv.reader(archivo)                
-                cabeza = next(lista_resultado)                
-                return render_template('resultado.html', form=form_nombre, cabeza=cabeza, cuerpo=lista_resultado, username=session.get('username'))
+        if form_nombre.validate_on_submit():            
+            with open('Ventas.csv') as archivo:
+                try:
+                    f = csv.reader(archivo)
+                    ventas=[]
+                    for linea in f:
+                        p = linea
+                        cliente = p[0]
+                        # El Array tupla, tiene los titulos del encabezado
+                        if "CLIENTE" == cliente:
+                            tupla = [p[0],p[1],p[2],p[3]]
+                        # Este Array guarda las ventas que coincide el cliente
+                        if form_nombre.criterio.data.lower() in cliente.lower():
+                            venta = [p[0],p[1],p[2],p[3]]
+                            ventas.append(venta)
+                    return render_template('resultado.html', form=form_nombre, cabeza=tupla, cuerpo=ventas, username=session.get('username'))
+                except IndexError:
+                    return 'Número de campos en archivo Usuarios es invalido'           
         return render_template('busqueda_cliente.html', form=form_nombre, df=df, username=session.get('username'))
     return render_template('deslogueado.html')
 
 @app.route('/busqueda/producto', methods=['GET', 'POST'])
 def busqueda_producto():
-    if 'username' in session:
+    if 'username' in session:        
+        form_producto = Consulta_Producto()
         try:
-            with open('busquedas.csv', 'w') as archivo:
-                archivo.truncate()
+            df = pandas.read_csv('Ventas.csv')
         except FileNotFoundError:
-            return 'No se encuentra el archivo csv utilizado para las busquedas'
-        form_apellido = Consulta_Producto()
-        df = pandas.read_csv('Ventas.csv')
-        if form_apellido.validate_on_submit():
-            df2 = df[(df['PRODUCTO']==form_apellido.criterio.data)]
-            df2 = df2.to_csv('busquedas.csv', index=None)
-            with open('busquedas.csv') as archivo:
-                lista_resultado = csv.reader(archivo)
-                cabeza = next(lista_resultado)
-                return render_template('resultado.html', form=form_apellido, cabeza=cabeza, cuerpo=lista_resultado, username=session.get('username'))
-        return render_template('busqueda_producto.html', form=form_apellido, df=df, username=session.get('username'))
+            return 'No se encuentra el archivo CSV de Ventas'
+        if form_producto.validate_on_submit():
+            with open('Ventas.csv') as archivo:
+                try:
+                    f = csv.reader(archivo)
+                    ventas=[]
+                    for linea in f:
+                        p = linea
+                        cliente = p[0]
+                        producto = p[1]
+                        # El Array tupla, tiene los titulos del encabezado
+                        if "CLIENTE" == cliente:
+                            tupla = [p[0],p[1],p[2],p[3]]
+                        # Este Array guarda las ventas que coincide el cliente
+                        if form_producto.criterio.data == producto:
+                            venta = [p[0],p[1],p[2],p[3]]
+                            ventas.append(venta)
+                    return render_template('resultado.html', form=form_producto, cabeza=tupla, cuerpo=ventas, username=session.get('username'))
+                except IndexError:
+                    return 'Número de campos en archivo Usuarios es invalido'                           
+        return render_template('busqueda_producto.html', form=form_producto, df=df, username=session.get('username'))
     return render_template('deslogueado.html')
 
 @app.route('/busqueda/cantidad', methods=['GET', 'POST'])
 def busqueda_cantidad():
     if 'username' in session:
+        form_cantidad = Consulta_Cantidad()
         try:
-            with open('busquedas.csv', 'w') as archivo:
-                archivo.truncate()
+            df = pandas.read_csv('Ventas.csv')
         except FileNotFoundError:
-            return 'No se encuentra el archivo csv utilizado para las busquedas'
-        form_telefono = Consulta_Cantidad()
-        df = pandas.read_csv('Ventas.csv')
-        if form_telefono.validate_on_submit():
-            df2 = df[(df['CANTIDAD']==int(form_telefono.criterio.data))]
-            df2 = df2.to_csv('busquedas.csv', index=None)
-            with open('busquedas.csv') as archivo:
-                lista_resultado = csv.reader(archivo)
-                cabeza = next(lista_resultado)
-                return render_template('resultado.html', form=form_telefono, cabeza=cabeza, cuerpo=lista_resultado, username=session.get('username'))
-        return render_template('busqueda_cantidad.html', form=form_telefono, df=df, username=session.get('username'))
+            return 'No se encuentra el archivo CSV de Ventas'
+        if form_cantidad.validate_on_submit():
+            with open('Ventas.csv') as archivo:
+                try:
+                    f = csv.reader(archivo)
+                    ventas=[]
+                    for linea in f:
+                        p = linea
+                        cliente = p[0]
+                        cantidad = p[2]                        
+                        # El Array tupla, tiene los titulos del encabezado
+                        if "CLIENTE" == cliente:
+                            tupla = [p[0],p[1],p[2],p[3]]
+                        # Este Array guarda las ventas que coincide el cliente
+                        if form_cantidad.criterio.data == cantidad:
+                            venta = [p[0],p[1],p[2],p[3]]
+                            ventas.append(venta)                            
+                    return render_template('resultado.html', form=form_cantidad, cabeza=tupla, cuerpo=ventas, username=session.get('username'))
+                except IndexError:
+                    return 'Número de campos en archivo Usuarios es invalido'                           
+        return render_template('busqueda_cantidad.html', form=form_cantidad, df=df, username=session.get('username'))
     return render_template('deslogueado.html')
+
 
 @app.route('/busqueda/precio', methods=['GET', 'POST'])
 def busqueda_precio():
     if 'username' in session:
+        form_precio = Consulta_Precio()
         try:
-            with open('busquedas.csv', 'w') as archivo:
-                archivo.truncate()
+            df = pandas.read_csv('Ventas.csv')
         except FileNotFoundError:
-            return 'No se encuentra el archivo csv utilizado para las busquedas'
-        form_telefono = Consulta_Precio()
-        df = pandas.read_csv('Ventas.csv')
-        if form_telefono.validate_on_submit():
-            df2 = df[(df['PRECIO']==float(form_telefono.criterio.data))]
-            df2 = df2.to_csv('busquedas.csv', index=None)
-            with open('busquedas.csv') as archivo:
-                lista_resultado = csv.reader(archivo)
-                cabeza = next(lista_resultado)
-                return render_template('resultado.html', form=form_telefono, cabeza=cabeza, cuerpo=lista_resultado, username=session.get('username'))
-        return render_template('busqueda_precio.html', form=form_telefono, df=df, username=session.get('username'))
+            return 'No se encuentra el archivo CSV de Ventas'
+        if form_precio.validate_on_submit():
+            with open('Ventas.csv') as archivo:
+                try:
+                    f = csv.reader(archivo)
+                    ventas=[]
+                    for linea in f:
+                        p = linea
+                        cliente = p[0]
+                        precio = p[3]                        
+                        # El Array tupla, tiene los titulos del encabezado
+                        if "CLIENTE" == cliente:
+                            tupla = [p[0],p[1],p[2],p[3]]
+                        # Este Array guarda las ventas que coincide el cliente
+                        if form_precio.criterio.data == precio:
+                            venta = [p[0],p[1],p[2],p[3]]
+                            ventas.append(venta)                            
+                    return render_template('resultado.html', form=form_precio, cabeza=tupla, cuerpo=ventas, username=session.get('username'))
+                except IndexError:
+                    return 'Número de campos en archivo Usuarios es invalido'                           
+        return render_template('busqueda_precio.html', form=form_precio, df=df, username=session.get('username'))
     return render_template('deslogueado.html')
 
 @app.route('/register', methods=['GET', 'POST'])
