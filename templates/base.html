@@ -1,14 +1,14 @@
 {% extends "bootstrap/base.html" %}
-
 {% block head %}
 {{ super() }}
+
 <link rel="shortcut icon" href="{{ url_for('static', filename = 'favicon.png') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename = 'favicon.png') }}" type="image/x-icon">
+
 {% endblock %}
-
 {% block title %}Hola {{ nombre }}{% endblock %}
-
 {% block navbar %}
+
 <div class="navbar navbar-inverse" role="navigation">
     <div class="container">
         <div class="navbar-header">
@@ -47,8 +47,8 @@
 <div class="container">
     {% block page_content %}{% endblock %}
 </div>
-{% endblock %}
 
+{% endblock %}
 {% block scripts %}
 {{ super() }}
 {{ moment.include_moment() }}

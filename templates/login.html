@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-
 {% block title %}Login{% endblock %}
-
 {% block page_content %}
 {% if username %}
 <h1> Ya estas logueado como {{username}}, <a href="/desloguearse">desloguearse</a> </h1>
@@ -25,5 +23,3 @@
 <p><a href="/register">Registrarse</a> para adquirir un Usuario.</p>
 {% endif %}
 {% endblock %}
-
-

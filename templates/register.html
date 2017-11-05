@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-
 {% block title %}Registero{% endblock %}
-
 {% block page_content %}
 <form method="POST" action="/register">
     <p>{{ form.csrf_token }}
@@ -18,5 +16,3 @@
     <input type="submit" value="Enviar">
 </form>
 {% endblock %}
-
-
