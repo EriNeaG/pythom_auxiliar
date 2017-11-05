@@ -53,7 +53,7 @@ try:
         for linea in lector:
             lista_usuarios.append(linea[0])
 except FileNotFoundError:
-    print('No se encuentra el archivo CSV de Usuarios')
+    print('Error de CSV de Usuarios')
 
 try:
     with open('busquedas.csv') as archivo:
