@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Busqueda por Cliente{% endblock %}
 {% block page_content %}
-<form method="POST" action="/busqueda/cliente">
+<form method="POST" action="/cliente">
     {{ form.csrf_token }}
     {{ form.criterio.label }}</br>{{ form.criterio(size=20) }}
     {% if form.errors %}

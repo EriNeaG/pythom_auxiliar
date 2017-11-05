@@ -30,7 +30,7 @@ try:
     with open('bdatos.csv') as archivo:
         pass
 except FileNotFoundError:
-    print('No se encuentra el archivo CSV de Ventas')
+    print('Error al buscar el csv de base de datos')
 
 #La pagina esta pensada para que descubra/muestre el menu si la persona se loggea.
 @app.route('/')
@@ -63,49 +63,49 @@ def login():
             return 'No se encuentra el archivo de usuariosbase'
     return render_template('login.html', form=fomu_log, username=session.get('usuarioLoggeado'))
 
-
+#conformacion de la base de datos que solo sera visible si estas loggeado.
 @app.route('/basededatos', methods=['GET', 'POST'])
 def bdatos():
     if 'usuarioLoggeado' in session:
         try:
             with open('bdatos.csv', 'r') as archivo:
-                lista_ventas = csv.reader(archivo)                
-                primera_linea = next(lista_ventas)                                
-                return render_template('tabla.html', cabeza=primera_linea, cuerpo=lista_ventas, username=session.get('usuarioLoggeado'))
+                datalines = csv.reader(archivo)                
+                titulos = next(datalines)                                
+                return render_template('tabla.html', cabeza=titulos, cuerpo=datalines, username=session.get('usuarioLoggeado'))
         except FileNotFoundError:
-            return 'No se encuentra el archivo CSV'
+            return 'No se encuentra la base de datos de PharmaDino'
     return render_template('sign_off.html')
 
-#Busquedas en la tabla (para hacer las busquedas, utilizé el dataFrame de Pandas, que primero lee el archivo y lo guarda en una variable, luego, como argumento le hardcodeo el header de la columna en la cual quiero hacer la busqueda, y paso como dato lo que el usuario haya ingresado para buscar, si lo que se buscó se encuentra en el dataframe, guardara en la variable df2 el resultado. Luego, utilizando el metodo "to_csv" del dataframe, guardo en un archivo el resultado, con formato csv, y hago exactamente lo mismo que en la url anterior, abro el archivo, guardo los headers en una variable, los resultados en otra, y los envio a la plantilla html.
-
-@app.route('/busqueda/cliente', methods=['GET', 'POST'])
+#Este menu aparece cuando se esta loggeado.
+@app.route('/cliente', methods=['GET', 'POST'])
 def busqueda_cliente():
     if 'usuarioLoggeado' in session:        
         form_nombre = Consulta_Cliente()    
         try:
-            df = pandas.read_csv('bdatos.csv')
+            with open('bdatos.csv') as archivo:
+                pass
         except FileNotFoundError:
-            return 'No se encuentra el archivo CSV de Ventas'    
+            return 'cvs de base de datos inexistente'    
         if form_nombre.validate_on_submit():            
             with open('bdatos.csv') as archivo:
                 try:
                     filecsv = csv.reader(archivo)
-                    ventas=[]
+                    infos=[]
                     for linea in filecsv:
-                        p = linea
-                        codigo = p[0]
-                        cliente = p[1]
+                        ubicacion = linea
+                        codigo = ubicacion[0]
+                        cliente = ubicacion[1]
                         # El Array tupla, tiene los titulos del encabezado
                         if "CODIGO" == codigo:
-                            tupla = [p[0],p[1],p[2],p[3],p[4]]
-                        # Este Array guarda las ventas que coincide el cliente
+                            tupla = [ubicacion[0],ubicacion[1],ubicacion[2],ubicacion[3],ubicacion[4]]
+                        # Este Array guarda las info que coincide el cliente
                         if form_nombre.criterio.data.lower() in cliente.lower():
-                            venta = [p[0],p[1],p[2],p[3],p[4]]
-                            ventas.append(venta)
-                    return render_template('resultado.html', form=form_nombre, cabeza=tupla, cuerpo=ventas, username=session.get('usuarioLoggeado'))
+                            info = [ubicacion[0],ubicacion[1],ubicacion[2],ubicacion[3],ubicacion[4]]
+                            infos.append(info)
+                    return render_template('tabla.html', form=form_nombre, cabeza=tupla, cuerpo=infos, username=session.get('usuarioLoggeado'))
                 except IndexError:
                     return 'Numero invalido de datos a corroborar.'           
-        return render_template('busqueda_cliente.html', form=form_nombre, df=df, username=session.get('usuarioLoggeado'))
+        return render_template('cliente.html', form=form_nombre, username=session.get('usuarioLoggeado'))
     return render_template('sign_off.html')
 
 @app.route('/busqueda/producto', methods=['GET', 'POST'])
@@ -113,29 +113,30 @@ def busqueda_producto():
     if 'usuarioLoggeado' in session:        
         form_producto = Consulta_Producto()
         try:
-            df = pandas.read_csv('bdatos.csv')
+            with open('bdatos.csv') as archivo:
+                pass
         except FileNotFoundError:
-            return 'No se encuentra el archivo CSV de Ventas'
+            return 'Error al buscar el csv de base de datos'
         if form_producto.validate_on_submit():
             with open('bdatos.csv') as archivo:
                 try:
                     filecsv = csv.reader(archivo)
-                    ventas=[]
+                    infos=[]
                     for linea in filecsv:
-                        p = linea
-                        codigo = p[0]
-                        producto = p[2]
+                        ubicacion = linea
+                        codigo = ubicacion[0]
+                        producto = ubicacion[2]
                         # El Array tupla, tiene los titulos del encabezado
                         if "CODIGO" == codigo:
-                            tupla = [p[0],p[1],p[2],p[3],p[4]]
-                        # Este Array guarda las ventas que coincide el cliente
+                            tupla = [ubicacion[0],ubicacion[1],ubicacion[2],ubicacion[3],ubicacion[4]]
+                        # Este Array guarda las infos que coincide el cliente
                         if form_producto.criterio.data.lower() in producto.lower():
-                            venta = [p[0],p[1],p[2],p[3],p[4]]
-                            ventas.append(venta)
-                    return render_template('resultado.html', form=form_producto, cabeza=tupla, cuerpo=ventas, username=session.get('usuarioLoggeado'))
+                            info = [ubicacion[0],ubicacion[1],ubicacion[2],ubicacion[3],ubicacion[4]]
+                            infos.append(info)
+                    return render_template('tabla.html', form=form_producto, cabeza=tupla, cuerpo=infos, username=session.get('usuarioLoggeado'))
                 except IndexError:
                     return 'Número de campos en archivo Usuarios es invalido'                           
-        return render_template('busqueda_producto.html', form=form_producto, df=df, username=session.get('usuarioLoggeado'))
+        return render_template('busqueda_producto.html', form=form_producto, username=session.get('usuarioLoggeado'))
     return render_template('sign_off.html')
 
 @app.route('/busqueda/cantidad', methods=['GET', 'POST'])
@@ -143,29 +144,30 @@ def busqueda_cantidad():
     if 'usuarioLoggeado' in session:
         form_cantidad = Consulta_Cantidad()
         try:
-            df = pandas.read_csv('bdatos.csv')
+            with open('bdatos.csv') as archivo:
+                pass
         except FileNotFoundError:
-            return 'No se encuentra el archivo CSV de Ventas'
+            return 'Error al buscar el csv de base de datos'
         if form_cantidad.validate_on_submit():
             with open('bdatos.csv') as archivo:
                 try:
                     filecsv = csv.reader(archivo)
-                    ventas=[]
+                    infos=[]
                     for linea in filecsv:
-                        p = linea
-                        codigo = p[0]
-                        cantidad = p[3]                        
+                        ubicacion = linea
+                        codigo = ubicacion[0]
+                        cantidad = ubicacion[3]                        
                         # El Array tupla, tiene los titulos del encabezado
                         if "CODIGO" == codigo:
-                            tupla = [p[0],p[1],p[2],p[3],p[4]]
-                        # Este Array guarda las ventas que coincide el cliente
+                            tupla = [ubicacion[0],ubicacion[1],ubicacion[2],ubicacion[3],ubicacion[4]]
+                        # Este Array guarda las infos que coincide el cliente
                         if form_cantidad.criterio.data == cantidad:
-                            venta = [p[0],p[1],p[2],p[3],p[4]]
-                            ventas.append(venta)                            
-                    return render_template('resultado.html', form=form_cantidad, cabeza=tupla, cuerpo=ventas, username=session.get('usuarioLoggeado'))
+                            info = [ubicacion[0],ubicacion[1],ubicacion[2],ubicacion[3],ubicacion[4]]
+                            infos.append(info)                            
+                    return render_template('tabla.html', form=form_cantidad, cabeza=tupla, cuerpo=infos, username=session.get('usuarioLoggeado'))
                 except IndexError:
                     return 'Error al encontrar los usuarios y cantidad'                           
-        return render_template('busqueda_cantidad.html', form=form_cantidad, df=df, username=session.get('usuarioLoggeado'))
+        return render_template('busqueda_cantidad.html', form=form_cantidad, username=session.get('usuarioLoggeado'))
     return render_template('sign_off.html')
 
 
@@ -174,29 +176,30 @@ def busqueda_precio():
     if 'usuarioLoggeado' in session:
         form_precio = Consulta_Precio()
         try:
-            df = pandas.read_csv('bdatos.csv')
+            with open('bdatos.csv') as archivo:
+                pass
         except FileNotFoundError:
-            return 'No se encuentra el archivo CSV de Ventas'
+            return 'No se encuentra el archivo CSV de infos'
         if form_precio.validate_on_submit():
             with open('bdatos.csv') as archivo:
                 try:
-                    f = csv.reader(archivo)
-                    ventas=[]
-                    for linea in f:
-                        p = linea
-                        codigo = p[0]
-                        precio = p[4]                        
+                    filecsv = csv.reader(archivo)
+                    infos=[]
+                    for linea in filecsv:
+                        ubicacion = linea
+                        codigo = ubicacion[0]
+                        precio = ubicacion[4]                        
                         # El Array tupla, tiene los titulos del encabezado
                         if "CODIGO" == codigo:
-                            tupla = [p[0],p[1],p[2],p[3],p[4]]
-                        # Este Array guarda las ventas que coincide el cliente
+                            tupla = [ubicacion[0],ubicacion[1],ubicacion[2],ubicacion[3],ubicacion[4]]
+                        # Este Array guarda las infos que coincide el cliente
                         if form_precio.criterio.data == precio:
-                            venta = [p[0],p[1],p[2],p[3],p[4]]
-                            ventas.append(venta)                           
-                    return render_template('resultado.html', form=form_precio, cabeza=tupla, cuerpo=ventas, username=session.get('usuarioLoggeado'))
+                            info = [ubicacion[0],ubicacion[1],ubicacion[2],ubicacion[3],ubicacion[4]]
+                            infos.append(info)                           
+                    return render_template('tabla.html', form=form_precio, cabeza=tupla, cuerpo=infos, username=session.get('usuarioLoggeado'))
                 except IndexError:
                     return 'Error al buscar el usuario y su precio'                           
-        return render_template('busqueda_precio.html', form=form_precio, df=df, username=session.get('usuarioLoggeado'))
+        return render_template('busqueda_precio.html', form=form_precio, username=session.get('usuarioLoggeado'))
     return render_template('sign_off.html')
 
 @app.route('/register', methods=['GET', 'POST'])
