@@ -13,6 +13,19 @@
     <p>{{ form.csrf_token }}
     {{ form.password2.label }} {{ form.password2(size=20) }}
 	</p>
+    {% if form.errors %}
+    <ul class="errors" style="color: red;" >
+        {% for error in form.name.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+        {% for error in form.password1.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+        {% for error in form.password2.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
     <input type="submit" value="Enviar">
 </form>
 {% endblock %}

@@ -6,7 +6,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired,EqualTo,Regexp
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_script import Manager
@@ -25,10 +25,11 @@ class Consulta_Producto(FlaskForm):
     criterio = StringField('Escriba el Nombre del Producto: ', validators=[DataRequired(message="Debe escribir un valor")])
 
 class Consulta_Cantidad(FlaskForm):
-    criterio = IntegerField('Escriba la Cantidad que Stock que desea buscar: ', validators=[DataRequired(message="Debe escribir un valor")])
+    criterio = StringField('Escriba la Cantidad que Stock que desea buscar: ', validators=[DataRequired(message="Debe escribir un valor"),Regexp(regex="\d+", message="Solo nùmeros enteros por favor")])
 
 class Consulta_Precio(FlaskForm):
-    criterio = IntegerField('Escriba el Precio que busca: ', validators=[DataRequired(message="Debe escribir un valor")])
+    criterio = StringField('Escriba el Precio que busca: ', validators=[DataRequired(message="Debe escribir un valor"),Regexp(regex="^(\d|-)?(\d|,)*\.?\d*$", message="Ingrese un precio valido")])
+    #/^[1-9]\d*$/
 
 #Formulario para logueo del usuario.
 
@@ -39,9 +40,9 @@ class Formulario_Logueo(FlaskForm):
 #Formulario para registro de un nuevo usuario.
 
 class Formulario_Registro(FlaskForm):
-    name = StringField('Usuario:', validators=[DataRequired()])
-    password1 = PasswordField('Contraseña:', validators=[DataRequired()])
-    password2 = PasswordField('Repita Contraseña:', validators=[DataRequired()])
+    name = StringField('Usuario:', validators=[DataRequired(message="Debe escribir un nombre de usuario")])
+    password1 = PasswordField('Contraseña:', validators=[DataRequired(message="Debe escribir una contraseña")])
+    password2 = PasswordField('Repita Contraseña:', validators=[DataRequired(message="Debe escribir de nuevo su contraseña"),EqualTo('password1', message='Las contraseñas deben coincidir')])
 
 app.config['SECRET_KEY'] = 'un string que funcione como llave'
 
@@ -87,15 +88,18 @@ def login():
     if form_logueo.validate_on_submit():
         try:
             with open('Usuarios.csv') as archivo:
-                f = csv.reader(archivo)
-                for linea in f:
-                    p = linea
-                    a = p[0]
-                    b = p[1]
-                    if form_logueo.name.data == a and form_logueo.password.data == b:
-                        session['username'] = form_logueo.name.data
-                        #El return renderiza en index.html con la sesion iniciada (poder ver el menu).
-                        return render_template('index.html', username=session.get('username'))
+                try:
+                    f = csv.reader(archivo)
+                    for linea in f:
+                        p = linea
+                        a = p[0]
+                        b = p[1]
+                        if form_logueo.name.data == a and form_logueo.password.data == b:
+                            session['username'] = form_logueo.name.data
+                            #El return renderiza en index.html con la sesion iniciada (poder ver el menu).
+                            return render_template('index.html', username=session.get('username'))
+                except IndexError:
+                    return 'Número de campos en archivo Usuarios es invalido'        
         except FileNotFoundError:
             return 'No se encuentra el archivo de Usuarios'
     return render_template('login.html', form=form_logueo, username=session.get('username'))
@@ -107,8 +111,8 @@ def contactos():
     if 'username' in session:
         try:
             with open('Ventas.csv', 'r') as archivo:
-                lista_ventas = csv.reader(archivo)
-                primera_linea = next(lista_ventas)
+                lista_ventas = csv.reader(archivo)                
+                primera_linea = next(lista_ventas)                                
                 return render_template('ventas.html', cabeza=primera_linea, cuerpo=lista_ventas, username=session.get('username'))
         except FileNotFoundError:
             return 'No se encuentra el archivo CSV'
@@ -121,7 +125,7 @@ def busqueda_cliente():
     if 'username' in session:
         try:
             with open('busquedas.csv', 'w') as archivo:
-                archivo.truncate()
+                pass
         except FileNotFoundError:
             return 'No se encuentra el archivo csv utilizado para las busquedas'
         form_nombre = Consulta_Cliente()
@@ -133,8 +137,8 @@ def busqueda_cliente():
             df2 = df[(df['CLIENTE']==form_nombre.criterio.data)]
             df2 = df2.to_csv('busquedas.csv', index=None)
             with open('busquedas.csv') as archivo:
-                lista_resultado = csv.reader(archivo)
-                cabeza = next(lista_resultado)
+                lista_resultado = csv.reader(archivo)                
+                cabeza = next(lista_resultado)                
                 return render_template('resultado.html', form=form_nombre, cabeza=cabeza, cuerpo=lista_resultado, username=session.get('username'))
         return render_template('busqueda_cliente.html', form=form_nombre, df=df, username=session.get('username'))
     return render_template('deslogueado.html')
@@ -190,7 +194,7 @@ def busqueda_precio():
         form_telefono = Consulta_Precio()
         df = pandas.read_csv('Ventas.csv')
         if form_telefono.validate_on_submit():
-            df2 = df[(df['PRECIO']==int(form_telefono.criterio.data))]
+            df2 = df[(df['PRECIO']==float(form_telefono.criterio.data))]
             df2 = df2.to_csv('busquedas.csv', index=None)
             with open('busquedas.csv') as archivo:
                 lista_resultado = csv.reader(archivo)

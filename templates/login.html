@@ -12,7 +12,16 @@
     <p>{{ form.csrf_token }}
     {{ form.password.label }} {{ form.password(size=20) }}
     </p>
-
+	{% if form.errors %}
+	<ul class="errors" style="color: red;" >
+	    {% for error in form.name.errors %}
+	      <li>{{ error }}</li>
+	    {% endfor %}
+	    {% for error in form.password.errors %}
+	      <li>{{ error }}</li>
+	    {% endfor %}
+	    </ul>
+	{% endif %}
 	</br>
 	</br>
 

@@ -4,6 +4,13 @@
 <form method="POST" action="/busqueda/cliente">
     {{ form.csrf_token }}
     {{ form.criterio.label }} {{ form.criterio(size=20) }}
+    {% if form.errors %}
+    <ul class="errors" style="color: red;" >
+        {% for error in form.criterio.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}        
+        </ul>
+    {% endif %}
     <input type="submit" value="Enviar">
 </form>
 {% endblock %}
