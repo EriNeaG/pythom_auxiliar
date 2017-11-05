@@ -2,17 +2,20 @@
 {% block title %}Registero{% endblock %}
 {% block page_content %}
 <form method="POST" action="/register">
-    <p>{{ form.csrf_token }}
-    {{ form.name.label }} {{ form.name(size=20) }}
-	</p>
+    <table cellspacing="10">
+    <tr>
+    <td>{{ form.csrf_token }}
+    {{ form.name.label }} </td><td>&nbsp;</td><td> {{ form.name(size=20) }} </td>
+	</tr>
     
-    <p>{{ form.csrf_token }}
-    {{ form.password1.label }} {{ form.password1(size=20) }}
-	</p>
+    <tr>{{ form.csrf_token }}
+    <td>{{ form.password1.label }} </td><td>&nbsp;</td><td> {{ form.password1(size=20) }} </td>
+	</tr>
     
-    <p>{{ form.csrf_token }}
-    {{ form.password2.label }} {{ form.password2(size=20) }}
-	</p>
+    <tr>{{ form.csrf_token }}
+    <td>{{ form.password2.label }} </td><td>&nbsp;</td><td> {{ form.password2(size=20) }} </td>
+	</tr>
+    </table>
     {% if form.errors %}
     <ul class="errors" style="color: red;" >
         {% for error in form.name.errors %}

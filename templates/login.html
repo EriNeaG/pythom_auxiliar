@@ -5,13 +5,16 @@
 <h1> Ya estas logueado como {{username}}, <a href="/desloguearse">desloguearse</a> </h1>
 {% else %}
 <form method="POST" action="/login">
-    <p>{{ form.csrf_token }}
-    {{ form.name.label }} {{ form.name(size=20) }}
-    </p>
-
-    <p>{{ form.csrf_token }}
-    {{ form.password.label }} {{ form.password(size=20) }}
-    </p>
+    {{ form.csrf_token }}
+    <table cellspacing="10">
+    <tr>
+    <td> {{ form.name.label }} </td><td>&nbsp;</td><td> {{ form.name(size=20) }} </td>
+	</tr>
+    {{ form.csrf_token }}
+    <tr>
+    <td>{{ form.password.label }} </td><td>&nbsp;</td><td> {{ form.password(size=20) }} </td>
+    </tr>
+    </table>
 	{% if form.errors %}
 	<ul class="errors" style="color: red;" >
 	    {% for error in form.name.errors %}
