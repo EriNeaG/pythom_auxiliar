@@ -2,10 +2,8 @@
 import csv
 import sys
 import pandas
-#from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from formularios import Consulta_Cliente,Consulta_Producto,Consulta_Cantidad,Consulta_Precio, Formulario_Logueo,Formulario_Registro
-from venta import Item
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_script import Manager
@@ -59,6 +57,7 @@ def login():
     if form_logueo.validate_on_submit():
         try:
             with open('Usuarios.csv') as archivo:
+                #El siguiente try es por si se ingresa un unico campo lo campture en el IndexError
                 try:
                     f = csv.reader(archivo)
                     for linea in f:
