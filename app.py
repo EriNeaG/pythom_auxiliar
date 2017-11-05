@@ -94,13 +94,14 @@ def busqueda_cliente():
                     ventas=[]
                     for linea in f:
                         p = linea
-                        cliente = p[0]
+                        codigo = p[0]
+                        cliente = p[1]
                         # El Array tupla, tiene los titulos del encabezado
-                        if "CLIENTE" == cliente:
-                            tupla = [p[0],p[1],p[2],p[3]]
+                        if "CODIGO" == codigo:
+                            tupla = [p[0],p[1],p[2],p[3],p[4]]
                         # Este Array guarda las ventas que coincide el cliente
                         if form_nombre.criterio.data.lower() in cliente.lower():
-                            venta = [p[0],p[1],p[2],p[3]]
+                            venta = [p[0],p[1],p[2],p[3],p[4]]
                             ventas.append(venta)
                     return render_template('resultado.html', form=form_nombre, cabeza=tupla, cuerpo=ventas, username=session.get('username'))
                 except IndexError:
@@ -123,14 +124,14 @@ def busqueda_producto():
                     ventas=[]
                     for linea in f:
                         p = linea
-                        cliente = p[0]
-                        producto = p[1]
+                        codigo = p[0]
+                        producto = p[2]
                         # El Array tupla, tiene los titulos del encabezado
-                        if "CLIENTE" == cliente:
-                            tupla = [p[0],p[1],p[2],p[3]]
+                        if "CODIGO" == codigo:
+                            tupla = [p[0],p[1],p[2],p[3],p[4]]
                         # Este Array guarda las ventas que coincide el cliente
                         if form_producto.criterio.data.lower() in producto.lower():
-                            venta = [p[0],p[1],p[2],p[3]]
+                            venta = [p[0],p[1],p[2],p[3],p[4]]
                             ventas.append(venta)
                     return render_template('resultado.html', form=form_producto, cabeza=tupla, cuerpo=ventas, username=session.get('username'))
                 except IndexError:
@@ -153,14 +154,14 @@ def busqueda_cantidad():
                     ventas=[]
                     for linea in f:
                         p = linea
-                        cliente = p[0]
-                        cantidad = p[2]                        
+                        codigo = p[0]
+                        cantidad = p[3]                        
                         # El Array tupla, tiene los titulos del encabezado
-                        if "CLIENTE" == cliente:
-                            tupla = [p[0],p[1],p[2],p[3]]
+                        if "CODIGO" == codigo:
+                            tupla = [p[0],p[1],p[2],p[3],p[4]]
                         # Este Array guarda las ventas que coincide el cliente
                         if form_cantidad.criterio.data == cantidad:
-                            venta = [p[0],p[1],p[2],p[3]]
+                            venta = [p[0],p[1],p[2],p[3],p[4]]
                             ventas.append(venta)                            
                     return render_template('resultado.html', form=form_cantidad, cabeza=tupla, cuerpo=ventas, username=session.get('username'))
                 except IndexError:
@@ -184,15 +185,15 @@ def busqueda_precio():
                     ventas=[]
                     for linea in f:
                         p = linea
-                        cliente = p[0]
-                        precio = p[3]                        
+                        codigo = p[0]
+                        precio = p[4]                        
                         # El Array tupla, tiene los titulos del encabezado
-                        if "CLIENTE" == cliente:
-                            tupla = [p[0],p[1],p[2],p[3]]
+                        if "CODIGO" == codigo:
+                            tupla = [p[0],p[1],p[2],p[3],p[4]]
                         # Este Array guarda las ventas que coincide el cliente
                         if form_precio.criterio.data == precio:
-                            venta = [p[0],p[1],p[2],p[3]]
-                            ventas.append(venta)                            
+                            venta = [p[0],p[1],p[2],p[3],p[4]]
+                            ventas.append(venta)                           
                     return render_template('resultado.html', form=form_precio, cabeza=tupla, cuerpo=ventas, username=session.get('username'))
                 except IndexError:
                     return 'Error al buscar el usuario y su precio'                           
