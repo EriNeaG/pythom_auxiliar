@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Busqueda{% endblock %}
+{% block title %}Busqueda por Cliente{% endblock %}
 
 {% block page_content %}
 <form method="POST" action="/busqueda/cliente">
     {{ form.csrf_token }}
     {{ form.criterio.label }} {{ form.criterio(size=20) }}
-    <input type="submit" value="Mandale">
+    <input type="submit" value="Enviar">
 </form>
 {% endblock %}
